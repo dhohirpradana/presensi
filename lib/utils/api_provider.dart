@@ -20,7 +20,7 @@ class BaseApi {
     required String nis,
     required String kdmapel,
     required String tgl,
-    required String foto,
+    required File foto,
     required String latitude,
     required String longitude,
     required String keterangan,
@@ -31,7 +31,7 @@ class BaseApi {
       'nis': nis,
       'kdmapel': kdmapel,
       'tgl': tgl,
-      'foto': foto,
+      "foto": await MultipartFile.fromFile(foto.path),
       'latitude': latitude,
       'longitude': longitude,
       'keterangan': keterangan,
@@ -43,7 +43,6 @@ class BaseApi {
         }),
         data: formData);
     // final data = jsonDecode(res.data);
-    print(res);
-    return true;
+    return (res.data == '1') ? true : false;
   }
 }

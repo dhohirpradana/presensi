@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,11 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    final XFile? image =
+        await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     if (image != null) {
       setState(() {
         _pickedFile = File(image.path);
-        _pickedFileError == null;
       });
     } else {
       setState(() {
@@ -46,28 +47,49 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  _validateForm() {
+  _validateForm() async {
     bool _isValid = _formKey.currentState!.validate();
 
-    if (_mySelection == null) {
+    if (_pickedFile == null && _mySelection == null) {
       _dropdownError = "Pilih mapel pilihan!";
-      if (_pickedFile == null) {
-        setState(() => _pickedFileError = "Tidak ada foto!");
-        _isValid = false;
-      }
+      setState(() => _pickedFileError = "Tidak ada foto!");
+      _isValid = false;
+    } else if (_mySelection == null) {
+      _dropdownError = "Pilih mapel pilihan!";
+      _isValid = false;
+    } else if (_pickedFile == null) {
+      setState(() => _pickedFileError = "Tidak ada foto!");
+      _isValid = false;
     }
 
     if (_isValid) {
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-      BaseApi.submitPresensi(
+      final response = await BaseApi.submitPresensi(
           nis: widget.siswa[0]['nis'],
           kdmapel: _mySelection!,
           tgl: formattedDate,
-          foto: '',
+          foto: _pickedFile!,
           latitude: currLocation!.latitude.toString(),
           longitude: currLocation!.longitude.toString(),
-          keterangan: _keteranganController.text);
+          keterangan: _keteranganController.text.toUpperCase());
+      if (response) {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.SUCCES,
+          animType: AnimType.BOTTOMSLIDE,
+          title: 'SUKSES',
+          desc: 'Berhasil Presensi',
+          // autoHide: const Duration(seconds: 7),
+          btnOkOnPress: () {},
+        ).show().then((v) {
+          setState(() {
+            _pickedFile == null;
+            _mySelection == null;
+            _keteranganController.clear();
+          });
+        });
+      }
     }
   }
 
@@ -156,36 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24.0, bottom: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          getLocation();
-                        },
-                        child: Card(
-                            color: (currLocation != null &&
-                                    !currLocation!.isMocked)
-                                ? Colors.green[600]
-                                : Colors.red[400],
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  (currLocation != null &&
-                                          !currLocation!.isMocked)
-                                      ? 'Location OK'
-                                      : 'No Location',
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
+              const SizedBox(
+                height: 24,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -223,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                 ],
               ),
-              _pickedFileError == null
+              _pickedFile != null
                   ? const SizedBox.shrink()
                   : Row(
                       children: [
@@ -248,13 +242,47 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 24.0),
+                padding: const EdgeInsets.only(top: 24.0, bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          getLocation();
+                        },
+                        child: Card(
+                            color: (currLocation != null &&
+                                    !currLocation!.isMocked)
+                                ? Colors.green[600]
+                                : Colors.red[400],
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text(
+                                  (currLocation != null &&
+                                          !currLocation!.isMocked)
+                                      ? 'Location OK'
+                                      : 'No Location',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 0.0),
                 child: Row(
                   children: [
                     Expanded(
                         child: ElevatedButton(
                             onPressed: () {
-                              _validateForm();
+                              if (currLocation != null &&
+                                  !currLocation!.isMocked) {
+                                _validateForm();
+                              }
                             },
                             child: const Text('KIRIM'))),
                   ],
