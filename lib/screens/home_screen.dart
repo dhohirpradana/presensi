@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:presensi/screens/history_screen.dart';
 import 'package:presensi/utils/api_provider.dart';
 import 'package:presensi/utils/get_location.dart';
 import 'package:presensi/utils/validation.dart';
@@ -101,13 +102,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final hari = DateFormat('EEEE').format(DateTime.now());
+    final String hariId = (hari == 'Sunday')
+        ? 'MINGGU'
+        : (hari == 'Monday')
+            ? 'SENIN'
+            : (hari == 'Tuesday')
+                ? 'SELASA'
+                : (hari == 'Wednesday')
+                    ? 'RABU'
+                    : (hari == 'Thursday')
+                        ? 'KAMIS'
+                        : (hari == 'Friday')
+                            ? 'JUMAT'
+                            : 'SABTU';
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('PRESENSI SISWA'),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.person))
+            IconButton(
+                onPressed: () {
+                  DateTime now = DateTime.now();
+                  String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HistoryScreen(
+                                nis: widget.siswa[0]['nis'],
+                                tgl: formattedDate,
+                                hari: hariId,
+                              )));
+                },
+                icon: const Icon(Icons.list))
           ],
         ),
       ),
@@ -129,8 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               FutureBuilder<List>(
-                future: BaseApi.getMapelData(widget.siswa[0]['kelas']),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                future: BaseApi.getMapelData(widget.siswa[0]['kelas'], hariId),
+                builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
                   final data = snapshot.data;
                   if (snapshot.hasData) {
                     return Row(
@@ -141,7 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: DropdownButton<String>(
                                 isExpanded: true,
                                 isDense: true,
-                                hint: const Text("Pilih mapel"),
+                                hint: Text((data!.isNotEmpty)
+                                    ? "Pilih mapel"
+                                    : 'Tidak ada mapel hari ini'),
                                 value: _mySelection,
                                 onChanged: (v) {
                                   setState(() {

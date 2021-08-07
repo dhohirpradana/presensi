@@ -7,9 +7,13 @@ class BaseApi {
   static String url = 'http://192.168.43.205:8000/absikaphp';
   static String login = '$url/login.php';
 
-  static Future<List> getMapelData(String kelas) async {
+  static Future<List> getMapelData(String kelas, String hari) async {
     var _dio = Dio();
-    Map<String, dynamic> qParams = {'par': 'mapel', 'kelas': kelas};
+    Map<String, dynamic> qParams = {
+      'par': 'mapel',
+      'kelas': kelas,
+      'waktu': hari
+    };
 
     var res = await _dio.get('$url/getData.php', queryParameters: qParams);
     final data = jsonDecode(res.data);
@@ -44,5 +48,20 @@ class BaseApi {
         data: formData);
     // final data = jsonDecode(res.data);
     return (res.data == '1') ? true : false;
+  }
+
+  static Future<List> getPresensiByUser(
+      String nis, String tgl, String hari) async {
+    var _dio = Dio();
+    Map<String, dynamic> qParams = {
+      'par': 'presensiByUser',
+      'nis': nis,
+      'tgl': tgl,
+      'waktu': hari
+    };
+
+    var res = await _dio.get('$url/getData.php', queryParameters: qParams);
+    final data = jsonDecode(res.data);
+    return data;
   }
 }
