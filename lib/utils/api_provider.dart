@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:presensi/utils/global_store.dart';
+import 'package:presensi/utils/url.dart';
 
 class BaseApi {
-  static String url = 'http://192.168.43.205:8000/absikaphp';
-  static String login = '$url/login.php';
+  // static String url = 'http://192.168.43.205:8000/absikaphp';
+  static String login = '$localhost/absikaphp/login.php';
 
   static Future<List> getMapelData(String kelas, String hari) async {
     var _dio = Dio();
@@ -16,7 +17,8 @@ class BaseApi {
       'waktu': hari
     };
 
-    var res = await _dio.get('$url/getData.php', queryParameters: qParams);
+    var res = await _dio.get('$localhost/absikaphp/getData.php',
+        queryParameters: qParams);
     final data = jsonDecode(res.data);
     return data;
   }
@@ -42,7 +44,7 @@ class BaseApi {
       'keterangan': keterangan,
     });
 
-    var res = await _dio.post('$url/submit.php',
+    var res = await _dio.post('$localhost/absikaphp/submit.php',
         options: Options(headers: {
           HttpHeaders.contentTypeHeader: "application/json",
         }),
@@ -62,7 +64,8 @@ class BaseApi {
       'waktu': hari
     };
 
-    var res = await _dio.get('$url/getData.php', queryParameters: qParams);
+    var res = await _dio.get('$localhost/absikaphp/getData.php',
+        queryParameters: qParams);
     final data = jsonDecode(res.data);
     // print(data);
     return data;

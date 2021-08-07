@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:presensi/screens/home_screen.dart';
+import 'package:presensi/screens/localhost_screen.dart';
 import 'package:presensi/utils/auth.dart';
+import 'package:presensi/utils/url.dart';
 import 'package:presensi/utils/validation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,10 +51,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Icon(
-                        Icons.person,
-                        size: MediaQuery.of(context).size.width / 4,
-                        color: Colors.grey,
+                      child: GestureDetector(
+                        onLongPress: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const LocalhostScren()));
+                        },
+                        child: Icon(
+                          Icons.person,
+                          size: MediaQuery.of(context).size.width / 4,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                     Padding(
@@ -108,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(
                               child: ElevatedButton(
                                   onPressed: () async {
+                                    print(localhost);
                                     if (_key.currentState!.validate()) {
                                       final login = await Auth.login(
                                           _nisController.text,
