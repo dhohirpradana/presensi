@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:presensi/utils/global_store.dart';
 
 class BaseApi {
   static String url = 'http://192.168.43.205:8000/absikaphp';
@@ -47,6 +48,7 @@ class BaseApi {
         }),
         data: formData);
     // final data = jsonDecode(res.data);
+    pickedFile = null;
     return (res.data == '1') ? true : false;
   }
 
@@ -62,6 +64,7 @@ class BaseApi {
 
     var res = await _dio.get('$url/getData.php', queryParameters: qParams);
     final data = jsonDecode(res.data);
+    // print(data);
     return data;
   }
 }

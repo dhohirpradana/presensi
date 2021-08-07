@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:presensi/screens/history_screen.dart';
 import 'package:presensi/utils/api_provider.dart';
 import 'package:presensi/utils/get_location.dart';
+import 'package:presensi/utils/global_store.dart';
 import 'package:presensi/utils/validation.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _dropdownError;
   String? _pickedFileError;
   final ImagePicker _picker = ImagePicker();
-  File? _pickedFile;
 
   String? _mySelection;
   Position? currLocation;
@@ -39,11 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
         await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     if (image != null) {
       setState(() {
-        _pickedFile = File(image.path);
+        pickedFile = File(image.path);
       });
     } else {
       setState(() {
-        _pickedFile = null;
+        pickedFile = null;
       });
     }
   }
@@ -51,14 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
   _validateForm() async {
     bool _isValid = _formKey.currentState!.validate();
 
-    if (_pickedFile == null && _mySelection == null) {
+    if (pickedFile == null && _mySelection == null) {
       _dropdownError = "Pilih mapel pilihan!";
       setState(() => _pickedFileError = "Tidak ada foto!");
       _isValid = false;
     } else if (_mySelection == null) {
       _dropdownError = "Pilih mapel pilihan!";
       _isValid = false;
-    } else if (_pickedFile == null) {
+    } else if (pickedFile == null) {
       setState(() => _pickedFileError = "Tidak ada foto!");
       _isValid = false;
     }
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           nis: widget.siswa[0]['nis'],
           kdmapel: _mySelection!,
           tgl: formattedDate,
-          foto: _pickedFile!,
+          foto: pickedFile!,
           latitude: currLocation!.latitude.toString(),
           longitude: currLocation!.longitude.toString(),
           keterangan: _keteranganController.text.toUpperCase());
@@ -85,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
           btnOkOnPress: () {},
         ).show().then((v) {
           setState(() {
-            _pickedFile == null;
             _mySelection == null;
             _keteranganController.clear();
           });
@@ -118,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             : 'SABTU';
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xff2c3e50),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 hari: hariId,
                               )));
                 },
-                icon: const Icon(Icons.list))
+                icon: const Icon(Icons.list_alt_rounded))
           ],
         ),
       ),
@@ -214,13 +214,13 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  (_pickedFile != null)
+                  (pickedFile != null)
                       ? InkWell(
                           onTap: () {
                             pickImage();
                           },
                           child: Image.file(
-                            File(_pickedFile!.path),
+                            File(pickedFile!.path),
                             width: 150,
                           ),
                         )
@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                 ],
               ),
-              _pickedFile != null
+              pickedFile != null
                   ? const SizedBox.shrink()
                   : Row(
                       children: [
@@ -308,6 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Expanded(
                         child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color(0xff2c3e50))),
                             onPressed: () {
                               if (currLocation != null &&
                                   !currLocation!.isMocked) {

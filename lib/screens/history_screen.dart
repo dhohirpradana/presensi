@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:presensi/screens/login_screen.dart';
 import 'package:presensi/utils/api_provider.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -13,14 +14,43 @@ class HistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PRESENSI HARI INI'),
+        backgroundColor: const Color(0xff2c3e50),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('PRESENSI HARI INI'),
+            Column(
+              children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                          (Route<dynamic> route) => false);
+                    },
+                    icon: const Icon(Icons.exit_to_app_rounded)),
+              ],
+            )
+          ],
+        ),
       ),
       body: FutureBuilder<List>(
         future: BaseApi.getPresensiByUser(nis, tgl, hari),
         builder: (context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data!.isNotEmpty) {
-              return const Text('ADA');
+              return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, i) {
+                    final data = snapshot.data!;
+                    return Card(
+                      child: ListTile(
+                        title: Text(data[i]['pelajaran']),
+                        subtitle: Text(data[i]['keterangan']),
+                      ),
+                    );
+                  });
             } else {
               return const Center(
                   child: Text('BELUM ADA DATA PRESENSI HARI INI'));
