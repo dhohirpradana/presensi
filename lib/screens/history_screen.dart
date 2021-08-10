@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presensi/screens/login_screen.dart';
 import 'package:presensi/utils/api_provider.dart';
+import 'package:presensi/utils/url.dart';
 
 class HistoryScreen extends StatelessWidget {
   final String nis;
@@ -44,10 +45,17 @@ class HistoryScreen extends StatelessWidget {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, i) {
                     final data = snapshot.data!;
+                    final foto = data[i]['foto'];
                     return Card(
                       child: ListTile(
                         title: Text(data[i]['pelajaran']),
-                        subtitle: Text(data[i]['keterangan']),
+                        subtitle: Row(
+                          children: [
+                            Text(data[i]['keterangan']),
+                            Image.network(
+                                'http://$localhost/absikaweb/api/$foto')
+                          ],
+                        ),
                       ),
                     );
                   });
