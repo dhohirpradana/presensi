@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(
                               child: ElevatedButton(
                                   onPressed: () async {
-                                    print(localhost);
+                                    // print(localhost);
                                     if (_key.currentState!.validate()) {
                                       final login = await Auth.login(
                                           _nisController.text,
