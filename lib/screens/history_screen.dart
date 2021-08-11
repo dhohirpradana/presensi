@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:presensi/screens/login_screen.dart';
 import 'package:presensi/utils/api_provider.dart';
@@ -48,12 +49,33 @@ class HistoryScreen extends StatelessWidget {
                     final foto = data[i]['foto'];
                     return Card(
                       child: ListTile(
-                        title: Text(data[i]['pelajaran']),
-                        subtitle: Row(
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(data[i]['keterangan']),
-                            Image.network(
-                                'http://$localhost/absikaweb/api/$foto')
+                            CachedNetworkImage(
+                              height: 75,
+                              imageUrl: "$localhost/absikaweb/api/$foto",
+                              placeholder: (context, url) => const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Mata Pelajaran : ' +
+                                      data[i]['pelajaran']
+                                          .toString()
+                                          .toUpperCase()),
+                                  Text('Keterangan       : ' +
+                                      data[i]['keterangan']),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ),
