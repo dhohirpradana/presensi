@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:presensi/screens/home_screen.dart';
 import 'package:presensi/screens/localhost_screen.dart';
 import 'package:presensi/utils/auth.dart';
-import 'package:presensi/utils/url.dart';
 import 'package:presensi/utils/validation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

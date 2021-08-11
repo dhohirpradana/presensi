@@ -57,7 +57,8 @@ class HistoryScreen extends StatelessWidget {
                               imageUrl: "$localhost/absikaweb/api/$foto",
                               placeholder: (context, url) => const Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: CircularProgressIndicator(),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
                               ),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
