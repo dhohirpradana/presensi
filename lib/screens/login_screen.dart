@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<List> getPref() async {
     final prefs = await SharedPreferences.getInstance();
+
     final nis = prefs.getInt('nis');
     final password = prefs.getString('password');
     return [nis, password];

@@ -72,8 +72,13 @@ class HistoryScreen extends StatelessWidget {
                                       data[i]['pelajaran']
                                           .toString()
                                           .toUpperCase()),
-                                  Text('Keterangan       : ' +
-                                      data[i]['keterangan']),
+                                  (data[i]['keterangan']
+                                              .toString()
+                                              .toUpperCase() !=
+                                          "HADIR")
+                                      ? Text('Keterangan       : ' +
+                                          data[i]['keterangan'])
+                                      : const SizedBox()
                                 ],
                               ),
                             )
