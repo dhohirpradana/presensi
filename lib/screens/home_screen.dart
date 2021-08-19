@@ -24,6 +24,20 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _dropdownError;
   String? _pickedFileError;
   final ImagePicker _picker = ImagePicker();
+  int _radioValue = 0;
+
+  void _handleRadioValueChange(int? value) {
+    setState(() {
+      _radioValue = value!;
+
+      switch (_radioValue) {
+        case 0:
+          break;
+        case 1:
+          break;
+      }
+    });
+  }
 
   String? _mySelection;
   Position? currLocation;
@@ -73,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
           foto: pickedFile!,
           latitude: currLocation!.latitude.toString(),
           longitude: currLocation!.longitude.toString(),
-          keterangan: _keteranganController.text.toUpperCase());
+          keterangan: (_radioValue == 0)
+              ? "HADIR"
+              : _keteranganController.text.toUpperCase());
       if (response) {
         AwesomeDialog(
           context: context,
@@ -259,16 +275,45 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
               Form(
                 key: _formKey,
-                child: TextFormField(
-                  controller: _keteranganController,
-                  validator: (password) {
-                    if (InputValidationMixin.isPasswordValid(password!)) {
-                      return null;
-                    }
-                    return 'Keterangan tidak boleh kosong!';
-                  },
-                  decoration: const InputDecoration(
-                      labelText: 'Keterangan', hintText: 'Masukan keterangan'),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Radio(
+                          value: 0,
+                          groupValue: _radioValue,
+                          onChanged: _handleRadioValueChange,
+                        ),
+                        const Text(
+                          'HADIR',
+                        ),
+                        Radio(
+                          value: 1,
+                          groupValue: _radioValue,
+                          onChanged: _handleRadioValueChange,
+                        ),
+                        const Text(
+                          'TIDAK HADIR',
+                        ),
+                      ],
+                    ),
+                    (_radioValue == 1)
+                        ? TextFormField(
+                            controller: _keteranganController,
+                            validator: (password) {
+                              if (InputValidationMixin.isPasswordValid(
+                                  password!)) {
+                                return null;
+                              }
+                              return 'Keterangan tidak boleh kosong!';
+                            },
+                            decoration: const InputDecoration(
+                                labelText: 'Keterangan',
+                                hintText: 'Masukan keterangan'),
+                          )
+                        : const SizedBox(),
+                  ],
                 ),
               ),
               Padding(
