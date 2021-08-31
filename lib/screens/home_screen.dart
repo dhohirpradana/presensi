@@ -118,7 +118,12 @@ class _HomeScreenState extends State<HomeScreen> {
           desc: 'Belum waktunya presensi!',
           // autoHide: const Duration(seconds: 7),
           btnCancelOnPress: () {
-            setState(() {});
+            setState(() {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomeScreen(siswa: widget.siswa)));
+            });
           },
         ).show();
       } else {
@@ -133,7 +138,12 @@ class _HomeScreenState extends State<HomeScreen> {
           desc: 'Telat $intTelat menit!',
           // autoHide: const Duration(seconds: 7),
           btnCancelOnPress: () {
-            setState(() {});
+            setState(() {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomeScreen(siswa: widget.siswa)));
+            });
           },
         ).show();
       }
