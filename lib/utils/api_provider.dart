@@ -1,19 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'global_store.dart';
 import 'url.dart';
 
 class BaseApi {
-  // static String url = 'http://192.168.43.205:8000/absikaphp';
   static String login = '$localhost/absikaweb/api/login.php';
 
+  static final _dio = Dio();
   static Future<List> getMapelData(String kelas, String hari) async {
-    var _dio = Dio();
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     Map<String, dynamic> qParams = {
       'par': 'mapel',
       'kelas': kelas,
-      'waktu': hari
+      'waktu': hari,
+      'tgl': formattedDate
     };
 
     var res = await _dio.get('$localhost/absikaweb/api/getData.php',
@@ -22,7 +25,7 @@ class BaseApi {
     return data;
   }
 
-  static Future<bool> submitPresensi({
+  static Future<int> submitPresensi({
     required String nis,
     required String kdmapel,
     required String tgl,
@@ -30,9 +33,10 @@ class BaseApi {
     required String latitude,
     required String longitude,
     required String keterangan,
+    required String mapelTime,
   }) async {
-    var _dio = Dio();
-
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('Hm').format(now);
     var formData = FormData.fromMap({
       'nis': nis,
       'kdmapel': kdmapel,
@@ -41,6 +45,8 @@ class BaseApi {
       'latitude': latitude,
       'longitude': longitude,
       'keterangan': keterangan,
+      'jam': formattedDate,
+      'mapel_time': mapelTime
     });
 
     var res = await _dio.post('$localhost/absikaweb/api/submit.php',
@@ -50,12 +56,11 @@ class BaseApi {
         data: formData);
     // final data = jsonDecode(res.data);
     pickedFile = null;
-    return (res.data == '1') ? true : false;
+    return (res.data == '1') ? 354 : int.parse(res.data);
   }
 
   static Future<List> getPresensiByUser(
       String nis, String tgl, String hari) async {
-    var _dio = Dio();
     Map<String, dynamic> qParams = {
       'par': 'presensiByUser',
       'nis': nis,

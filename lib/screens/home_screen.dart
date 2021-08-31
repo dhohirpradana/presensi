@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _pickedFileError;
   final ImagePicker _picker = ImagePicker();
   int _radioValue = 0;
+  String mapelTime = '';
 
   void _handleRadioValueChange(int? value) {
     setState(() {
@@ -77,10 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _isValid = false;
     }
 
-    if (_isValid) {
+    if (_isValid && mapelTime != '') {
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('yyyy-MM-dd').format(now);
       final response = await BaseApi.submitPresensi(
+          mapelTime: mapelTime,
           nis: widget.siswa[0]['nis'],
           kdmapel: _mySelection!,
           tgl: formattedDate,
@@ -90,8 +92,9 @@ class _HomeScreenState extends State<HomeScreen> {
           keterangan: (_radioValue == 0)
               ? "HADIR"
               : _keteranganController.text.toUpperCase());
-      if (response) {
+      if (response == 354) {
         AwesomeDialog(
+          dismissOnTouchOutside: false,
           context: context,
           dialogType: DialogType.SUCCES,
           animType: AnimType.BOTTOMSLIDE,
@@ -105,6 +108,34 @@ class _HomeScreenState extends State<HomeScreen> {
             _keteranganController.clear();
           });
         });
+      } else if (response > 59) {
+        AwesomeDialog(
+          dismissOnTouchOutside: false,
+          context: context,
+          dialogType: DialogType.WARNING,
+          animType: AnimType.BOTTOMSLIDE,
+          title: 'GAGAL',
+          desc: 'Belum waktunya presensi!',
+          // autoHide: const Duration(seconds: 7),
+          btnCancelOnPress: () {
+            setState(() {});
+          },
+        ).show();
+      } else {
+        double telat = response.abs() / 60;
+        int intTelat = telat.toInt();
+        AwesomeDialog(
+          dismissOnTouchOutside: false,
+          context: context,
+          dialogType: DialogType.WARNING,
+          animType: AnimType.BOTTOMSLIDE,
+          title: 'GAGAL',
+          desc: 'Telat $intTelat menit!',
+          // autoHide: const Duration(seconds: 7),
+          btnCancelOnPress: () {
+            setState(() {});
+          },
+        ).show();
       }
     }
   }
@@ -199,6 +230,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   for (int i = 0; i < data.length; i++)
                                     DropdownMenuItem<String>(
                                       value: data[i]["kode"].toString(),
+                                      onTap: () {
+                                        mapelTime = data[i]["waktu"].toString();
+                                      },
                                       child: Text(
                                         data[i]["pelajaran"],
                                       ),
