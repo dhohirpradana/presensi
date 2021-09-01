@@ -65,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _validateForm() async {
     bool _isValid = _formKey.currentState!.validate();
-
     if (pickedFile == null && _mySelection == null) {
       _dropdownError = "Pilih mapel pilihan!";
       setState(() => _pickedFileError = "Tidak ada foto!");
@@ -103,10 +102,10 @@ class _HomeScreenState extends State<HomeScreen> {
           // autoHide: const Duration(seconds: 7),
           btnOkOnPress: () {},
         ).show().then((v) {
-          setState(() {
-            _mySelection == null;
-            _keteranganController.clear();
-          });
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(siswa: widget.siswa)));
         });
       } else if (response > 59) {
         AwesomeDialog(
@@ -118,12 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
           desc: 'Belum waktunya presensi!',
           // autoHide: const Duration(seconds: 7),
           btnCancelOnPress: () {
-            setState(() {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomeScreen(siswa: widget.siswa)));
-            });
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HomeScreen(siswa: widget.siswa)));
           },
         ).show();
       } else {
@@ -138,12 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
           desc: 'Telat $intTelat menit!',
           // autoHide: const Duration(seconds: 7),
           btnCancelOnPress: () {
-            setState(() {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomeScreen(siswa: widget.siswa)));
-            });
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HomeScreen(siswa: widget.siswa)));
           },
         ).show();
       }
